@@ -4,20 +4,25 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// 種目マスターデータ
+// 種目マスターデータ (腹・有酸素運動を追加)
 const EXERCISE_MASTER = {
   "胸 (Chest)": ["ベンチプレス", "インクラインダンベルプレス", "チェストフライ", "ダンベルフライ", "ディップス"],
   "背中 (Back)": ["デッドリフト", "ラットプルダウン", "ベントオーバーロー", "懸垂(チンニング)", "シーテッドロー"],
   "脚 (Legs)": ["スクワット", "レッグプレス", "レッグエクステンション", "レッグカール", "ブルガリアンスクワット"],
   "肩 (Shoulders)": ["ショルダープレス", "サイドレイズ", "フロントレイズ", "リアレイズ"],
-  "腕 (Arms)": ["アームカール", "インクラインカール", "ライイング・トライセプス・エクステンション", "ケーブルプッシュダウン"],
-  "腹 (Abs)": ["クランチ", "レッグレイズ", "アブローラー"]
+  "腕 (Arms)": ["アームカール", "ダンベルカール", "インクラインカール", "ライイング・トライセプス・エクステンション", "ケーブルプッシュダウン"],
+  "腹 (Abs)": ["クランチ", "レッグレイズ", "アブローラー", "シットアップ", "プランク"],
+  "有酸素運動 (Cardio)": ["ランニング", "トレッドミル", "エアロバイク", "傾斜ウォーキング", "クロストレーナー"]
 };
 
 let currentDate = new Date();
 let selectedDateStr = formatDate(new Date());
 
-let workoutData = JSON.parse(localStorage.getItem('workout_memo_data')) || {};
+// 過去データ保持用のフォールバック対応
+let workoutData = JSON.parse(localStorage.getItem('workout_memo_data')) ||
+                  JSON.parse(localStorage.getItem('workout_data_v3')) ||
+                  JSON.parse(localStorage.getItem('workout_data')) || {};
+
 let appSettings = JSON.parse(localStorage.getItem('workout_memo_settings')) || { timerAuto: true, timerSec: 120 };
 
 let timerInterval = null;
@@ -56,6 +61,7 @@ function formatDate(date) {
 
 function saveData() {
   localStorage.setItem('workout_memo_data', JSON.stringify(workoutData));
+  localStorage.setItem('workout_data_v3', JSON.stringify(workoutData));
 }
 
 function saveSettings() {
@@ -86,7 +92,6 @@ function renderCalendar() {
 
     if (dateStr === selectedDateStr) dayEl.classList.add('active');
     
-    // データがある日に●を表示
     if (workoutData[dateStr] && workoutData[dateStr].length > 0) {
       dayEl.classList.add('has-data');
     }
@@ -101,7 +106,7 @@ function renderCalendar() {
   }
 }
 
-// カレンダー折りたたみ (PiPスペース確保用)
+// カレンダー折りたたみ
 toggleCalendarBtn.addEventListener('click', () => {
   if (calendarBody.classList.contains('hidden')) {
     calendarBody.classList.remove('hidden');
@@ -143,7 +148,7 @@ function renderWorkouts() {
             <td>
               <div class="step-control">
                 <button class="step-btn" onclick="changeVal('${selectedDateStr}', ${catIdx}, ${exIdx}, ${setIdx}, 'reps', -1)">-</button>
-                <input type="number" value="${set.reps}" onchange="updateSet('${selectedDateStr}', ${catIdx}, ${exIdx}, ${setIdx}, 'reps', 1)">
+                <input type="number" value="${set.reps}" onchange="updateSet('${selectedDateStr}', ${catIdx}, ${exIdx}, ${setIdx}, 'reps', this.value)">
                 <button class="step-btn" onclick="changeVal('${selectedDateStr}', ${catIdx}, ${exIdx}, ${setIdx}, 'reps', 1)">+</button>
               </div>
             </td>
@@ -185,20 +190,20 @@ function renderWorkouts() {
         <button class="del-btn" onclick="deleteCategory('${selectedDateStr}', ${catIdx})">部位削除</button>
       </div>
       ${exercisesHtml}
-      <div class="add-category-wrapper" style="margin-top:8px;">
-        <select id="ex-select-${catIdx}">
+      <div class="add-exercise-wrapper">
+        <select id="ex-select-${catIdx}" class="form-select">
           <option value="">-- 種目を選択 --</option>
           ${options}
           <option value="__custom__">＋ 直接手入力</option>
         </select>
-        <button class="sub-btn" style="background:var(--primary-blue); color:#fff;" onclick="addExerciseFromSelect('${selectedDateStr}', ${catIdx})">種目追加</button>
+        <button class="action-btn-primary" onclick="addExerciseFromSelect('${selectedDateStr}', ${catIdx})">種目追加</button>
       </div>
     `;
     container.appendChild(card);
   });
 }
 
-// データ調整 (0.25kg / 1レップ)
+// データ調整
 window.changeVal = function(dateStr, catIdx, exIdx, setIdx, field, delta) {
   let val = parseFloat(workoutData[dateStr][catIdx].exercises[exIdx].sets[setIdx][field]) || 0;
   val = Math.max(0, val + delta);
@@ -278,7 +283,7 @@ window.deleteCategory = function(dateStr, catIdx) {
   }
 };
 
-// 追加処理
+// 種目追加
 window.addExerciseFromSelect = function(dateStr, catIdx) {
   const select = document.getElementById(`ex-select-${catIdx}`);
   let name = select.value;
