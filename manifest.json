@@ -1,6 +1,6 @@
 {
-  "name": "筋トレメモ",
-  "short_name": "筋トレ",
+  "name": "Workout-memo",
+  "short_name": "Workout-memo",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#eef2f5",
