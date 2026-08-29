@@ -110,8 +110,27 @@ input, select, button {
 
 .calendar-days .active.has-data::after { color: #fff; }
 
-.section-divider { text-align: center; margin: 14px 0 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+.section-divider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px 0 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
 .section-divider h2 { font-size: 14px; font-weight: bold; }
+
+.copy-btn {
+  background: #319795;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
 /* 部位カード & テーブル */
 .category-card {
@@ -205,7 +224,7 @@ input, select, button {
   font-size: 12px;
 }
 
-/* 種目・部位追加フォーム（崩れ修正） */
+/* 種目・部位追加フォーム */
 .add-category-wrapper, .add-exercise-wrapper {
   display: flex;
   gap: 8px;

@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// 種目マスターデータ (腹・有酸素運動を追加)
+// 種目マスターデータ
 const EXERCISE_MASTER = {
   "胸 (Chest)": ["ベンチプレス", "インクラインダンベルプレス", "チェストフライ", "ダンベルフライ", "ディップス"],
   "背中 (Back)": ["デッドリフト", "ラットプルダウン", "ベントオーバーロー", "懸垂(チンニング)", "シーテッドロー"],
@@ -18,10 +18,13 @@ const EXERCISE_MASTER = {
 let currentDate = new Date();
 let selectedDateStr = formatDate(new Date());
 
-// 過去データ保持用のフォールバック対応
+// 過去データ保持用フォールバック
 let workoutData = JSON.parse(localStorage.getItem('workout_memo_data')) ||
                   JSON.parse(localStorage.getItem('workout_data_v3')) ||
                   JSON.parse(localStorage.getItem('workout_data')) || {};
+
+// ユーザーが手入力で追加したカスタム種目マスター
+let customMaster = JSON.parse(localStorage.getItem('workout_memo_custom_master')) || {};
 
 let appSettings = JSON.parse(localStorage.getItem('workout_memo_settings')) || { timerAuto: true, timerSec: 120 };
 
@@ -35,6 +38,7 @@ const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const selectedDateText = document.getElementById('selected-date-text');
+const copyClipboardBtn = document.getElementById('copy-clipboard-btn');
 const container = document.getElementById('workout-categories-container');
 const categorySelect = document.getElementById('category-select');
 const addCategoryBtn = document.getElementById('add-category-btn');
@@ -62,6 +66,10 @@ function formatDate(date) {
 function saveData() {
   localStorage.setItem('workout_memo_data', JSON.stringify(workoutData));
   localStorage.setItem('workout_data_v3', JSON.stringify(workoutData));
+}
+
+function saveCustomMaster() {
+  localStorage.setItem('workout_memo_custom_master', JSON.stringify(customMaster));
 }
 
 function saveSettings() {
@@ -182,7 +190,12 @@ function renderWorkouts() {
       `;
     });
 
-    const options = (EXERCISE_MASTER[cat.category] || []).map(item => `<option value="${item}">${item}</option>`).join('');
+    // 標準マスター ＋ 手入力で追加されたマスターの統合
+    const defaultEx = EXERCISE_MASTER[cat.category] || [];
+    const customEx = customMaster[cat.category] || [];
+    const combinedEx = Array.from(new Set([...defaultEx, ...customEx]));
+
+    const options = combinedEx.map(item => `<option value="${item}">${item}</option>`).join('');
 
     card.innerHTML = `
       <div class="category-header">
@@ -283,15 +296,27 @@ window.deleteCategory = function(dateStr, catIdx) {
   }
 };
 
-// 種目追加
+// 種目追加 (手入力種目をマスターへ記憶する処理を追加)
 window.addExerciseFromSelect = function(dateStr, catIdx) {
   const select = document.getElementById(`ex-select-${catIdx}`);
   let name = select.value;
   if (!name) return;
 
+  const categoryName = workoutData[dateStr][catIdx].category;
+
   if (name === "__custom__") {
     name = prompt("種目名を入力してください", "");
     if (!name) return;
+    name = name.trim();
+
+    // カスタムマスターに保存（重複排除）
+    if (!customMaster[categoryName]) {
+      customMaster[categoryName] = [];
+    }
+    if (!customMaster[categoryName].includes(name)) {
+      customMaster[categoryName].push(name);
+      saveCustomMaster();
+    }
   }
 
   workoutData[dateStr][catIdx].exercises.push({
@@ -312,6 +337,40 @@ addCategoryBtn.addEventListener('click', () => {
   categorySelect.value = "";
   saveData();
   renderWorkouts();
+});
+
+// Gemini用コピペ機能
+copyClipboardBtn.addEventListener('click', () => {
+  const categories = workoutData[selectedDateStr] || [];
+  if (categories.length === 0) {
+    alert("コピーするトレーニング記録がありません。");
+    return;
+  }
+
+  const [y, m, d] = selectedDateStr.split('-');
+  const dateObj = new Date(y, parseInt(m) - 1, d);
+  const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
+  
+  let text = `【Workout-memo】\n${y}年${parseInt(m)}月${parseInt(d)}日(${weekDays[dateObj.getDay()]}) のトレーニング記録\n\n`;
+
+  categories.forEach(cat => {
+    if (cat.exercises.length > 0) {
+      text += `■ ${cat.category}\n`;
+      cat.exercises.forEach(ex => {
+        text += `・${ex.name}\n`;
+        ex.sets.forEach((s, idx) => {
+          text += `  ${idx + 1}セット目: ${s.weight}kg × ${s.reps}回\n`;
+        });
+      });
+      text += `\n`;
+    }
+  });
+
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    alert("Gemini貼り付け用のテキストをコピーしました！");
+  }).catch(() => {
+    alert("コピーに失敗しました。");
+  });
 });
 
 // タイマー起動
