@@ -1,10 +1,10 @@
 :root {
-  --primary-color: #4CAF50;
-  --bg-color: #121212;
-  --card-bg: #1e1e1e;
-  --text-color: #ffffff;
-  --text-sub: #aaaaaa;
-  --border-color: #333333;
+  --primary-color: #2e7d32;   /* 落ち着いたグリーン */
+  --bg-color: #f4f6f8;        /* 明るいライトグレー背景 */
+  --card-bg: #ffffff;        /* 白ベースのカード背景 */
+  --text-color: #212121;      /* 濃いグレー（黒に近い見やすい文字色） */
+  --text-sub: #666666;        /* サブテキスト用グレー */
+  --border-color: #e0e0e0;    /* 控えめな枠線色 */
 }
 
 body {
@@ -17,88 +17,129 @@ body {
 
 .app-header {
   background-color: var(--card-bg);
-  padding: 10px 20px;
+  padding: 12px 20px;
   text-align: center;
   border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.app-header h1 { margin: 0; font-size: 1.2rem; }
+.app-header h1 { 
+  margin: 0; 
+  font-size: 1.2rem; 
+  color: var(--text-color);
+}
 
 .view-section { display: none; padding: 15px; }
 .view-section.active { display: block; }
 
-/* カレンダー関連 */
-.calendar-header { display: flex; justify-content: space-between; align-items: center; }
+/* 📅 カレンダー関連 */
+.calendar-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 10px;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 6px;
   margin-top: 10px;
 }
+
 .day-cell {
   background: var(--card-bg);
   min-height: 48px;
   padding: 4px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   position: relative;
   cursor: pointer;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
-.day-cell.today { border: 1px solid var(--primary-color); }
+
+.day-cell.today { 
+  border: 2px solid var(--primary-color); 
+  font-weight: bold;
+}
+
 .day-cell .stamp {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   display: block;
   margin-top: 2px;
 }
 
 /* 前回のヒント表示 */
 .prev-hint {
-  font-size: 0.75rem;
-  color: #888;
-  margin-bottom: 4px;
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+  background-color: #f0f4f8;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 /* 記録コピーボタン */
-.details-header { display: flex; justify-content: space-between; align-items: center; }
+.details-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
 .btn-copy {
   background: var(--primary-color);
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 20px;
   font-size: 0.8rem;
   cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* チャート・設定画面 */
+/* 📊 チャート・⚙️ 設定画面 */
 .chart-controls, .add-custom-form {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
 }
-select, input[type="text"] {
-  background: #2b2b2b;
-  color: #fff;
-  border: 1px solid var(--border-color);
-  padding: 8px;
+
+select, input[type="text"], input[type="number"] {
+  background: #ffffff;
+  color: var(--text-color);
+  border: 1px solid #ccc;
+  padding: 8px 10px;
   border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+select, input[type="text"] {
   flex: 1;
 }
 
 .chart-container {
   background: var(--card-bg);
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   position: relative;
   height: 250px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .chart-summary {
   margin-top: 15px;
-  padding: 10px;
+  padding: 12px;
   background: var(--card-bg);
   border-radius: 8px;
   font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  font-weight: bold;
 }
 
 .setting-group {
@@ -106,9 +147,12 @@ select, input[type="text"] {
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
+
 .setting-desc { font-size: 0.8rem; color: var(--text-sub); }
-.setting-buttons { display: flex; gap: 10px; }
+.setting-buttons { display: flex; gap: 10px; margin-top: 10px; }
 
 .btn-primary, .btn-secondary {
   background: var(--primary-color);
@@ -120,8 +164,12 @@ select, input[type="text"] {
   font-size: 0.85rem;
   display: inline-block;
   text-align: center;
+  font-weight: bold;
 }
-.btn-secondary { background: #444; }
+
+.btn-secondary { 
+  background: #666666; 
+}
 
 .custom-list { list-style: none; padding: 0; margin-top: 10px; }
 .custom-list li {
@@ -131,7 +179,7 @@ select, input[type="text"] {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* ボトムナビ */
+/* ボトムナビゲーション */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -139,14 +187,20 @@ select, input[type="text"] {
   background: var(--card-bg);
   display: flex;
   border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
 }
+
 .nav-btn {
   flex: 1;
   background: none;
   border: none;
   color: var(--text-sub);
   padding: 12px 0;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
-.nav-btn.active { color: var(--primary-color); font-weight: bold; }
+
+.nav-btn.active { 
+  color: var(--primary-color); 
+  font-weight: bold; 
+}
