@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Workout-memo</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
@@ -10,35 +10,62 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
+  <!-- トップヘッダー -->
   <header class="app-header">
-    <h1>Workout-memo</h1>
+    <h1 class="app-title">Workout-memo</h1>
   </header>
 
-  <main class="app-content">
+  <main class="main-content">
+    
     <!-- 📅 カレンダー画面 -->
     <section id="view-calendar" class="view-section active">
-      <div class="calendar-header">
-        <button id="prev-month">&lt;</button>
-        <h2 id="current-month-year"></h2>
-        <button id="next-month">&gt;</button>
-      </div>
-      <div class="calendar-grid" id="calendar-grid"></div>
-
-      <div class="day-details">
-        <div class="details-header">
-          <h3 id="selected-date-text">日付を選択してください</h3>
-          <button id="btn-copy-memo" class="btn-copy">📋 記録をコピー</button>
+      <div class="calendar-card">
+        <div class="calendar-header">
+          <button id="prev-month">&lt;</button>
+          <span id="current-month" class="month-title"></span>
+          <button id="next-month">&gt;</button>
+          <button id="toggle-calendar-btn" class="minimize-btn">▲ 縮小</button>
         </div>
-        <div id="workout-list"></div>
+        <div id="calendar-body">
+          <div class="calendar-weekdays">
+            <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+          </div>
+          <div id="calendar-days" class="calendar-days"></div>
+        </div>
+      </div>
+
+      <!-- 日付表示 & コピーボタン -->
+      <div class="section-divider">
+        <h2 id="selected-date-text"></h2>
+        <button id="copy-clipboard-btn" class="copy-btn">📋 記録をコピー</button>
+      </div>
+
+      <!-- トレーニング領域 -->
+      <div id="workout-categories-container"></div>
+
+      <!-- 部位追加フォーム -->
+      <div class="add-category-wrapper">
+        <select id="category-select" class="form-select">
+          <option value="">-- 部位を選択 --</option>
+          <option value="胸 (Chest)">■ 胸 (Chest)</option>
+          <option value="背中 (Back)">■ 背中 (Back)</option>
+          <option value="脚 (Legs)">■ 脚 (Legs)</option>
+          <option value="肩 (Shoulders)">■ 肩 (Shoulders)</option>
+          <option value="腕 (Arms)">■ 腕 (Arms)</option>
+          <option value="腹 (Abs)">■ 腹 (Abs)</option>
+          <option value="有酸素運動 (Cardio)">■ 有酸素運動 (Cardio)</option>
+        </select>
+        <button id="add-category-btn" class="action-btn-primary">部位を追加</button>
       </div>
     </section>
 
     <!-- 📊 チャート画面 -->
     <section id="view-chart" class="view-section">
-      <h2>📊 トレーニング分析</h2>
+      <h2 class="section-title">📊 トレーニング分析</h2>
       <div class="chart-controls">
-        <select id="chart-part-select"></select>
-        <select id="chart-exercise-select"></select>
+        <select id="chart-part-select" class="form-select"></select>
+        <select id="chart-exercise-select" class="form-select"></select>
       </div>
       <div class="chart-container">
         <canvas id="weightChart"></canvas>
@@ -48,11 +75,11 @@
 
     <!-- ⚙️ 設定画面 -->
     <section id="view-settings" class="view-section">
-      <h2>⚙️ 設定</h2>
+      <h2 class="section-title">⚙️ 設定</h2>
       
       <div class="setting-group">
         <h3>💾 データのバックアップと復元</h3>
-        <p class="setting-desc">データをJSON形式で保存・読み込みします。</p>
+        <p class="setting-desc">データをJSON形式でファイル保存・読み込みします。</p>
         <div class="setting-buttons">
           <button id="btn-export" class="btn-primary">データ書き出し (JSON)</button>
           <label class="btn-secondary">
@@ -63,22 +90,25 @@
       </div>
 
       <div class="setting-group">
-        <h3>🏋️ 種目・部位のカスタム</h3>
-        <div class="add-custom-form">
-          <select id="custom-part-select"></select>
-          <input type="text" id="custom-exercise-input" placeholder="新しい種目名を入力">
-          <button id="btn-add-exercise" class="btn-primary">追加</button>
-        </div>
+        <h3>🏋️ カスタム種目の管理</h3>
+        <p class="setting-desc">手入力で追加したカスタム種目の一覧です。</p>
         <ul id="custom-exercise-list" class="custom-list"></ul>
       </div>
     </section>
+
   </main>
 
-  <!-- ボトムナビゲーション -->
+  <!-- ボトムナビ -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-target="view-calendar">📅 カレンダー</button>
-    <button class="nav-btn" data-target="view-chart">📊 チャート</button>
-    <button class="nav-btn" data-target="view-settings">⚙️ 設定</button>
+    <button class="nav-btn active" data-target="view-calendar">
+      <span>📅 カレンダー</span>
+    </button>
+    <button class="nav-btn" data-target="view-chart">
+      <span>📊 チャート</span>
+    </button>
+    <button class="nav-btn" data-target="view-settings">
+      <span>⚙️ 設定</span>
+    </button>
   </nav>
 
   <script src="app.js"></script>
