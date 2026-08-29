@@ -1,10 +1,10 @@
 :root {
-  --primary-color: #2e7d32;   /* 落ち着いたグリーン */
-  --bg-color: #f4f6f8;        /* 明るいライトグレー背景 */
-  --card-bg: #ffffff;        /* 白ベースのカード背景 */
-  --text-color: #212121;      /* 濃いグレー（黒に近い見やすい文字色） */
-  --text-sub: #666666;        /* サブテキスト用グレー */
-  --border-color: #e0e0e0;    /* 控えめな枠線色 */
+  --primary-color: #2e7d32;
+  --bg-color: #f4f6f8;
+  --card-bg: #ffffff;
+  --text-color: #212121;
+  --text-sub: #666666;
+  --border-color: #e0e0e0;
 }
 
 body {
@@ -15,6 +15,7 @@ body {
   padding-bottom: 70px;
 }
 
+/* ヘッダー */
 .app-header {
   background-color: var(--card-bg);
   padding: 12px 20px;
@@ -23,32 +24,77 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.app-header h1 { 
-  margin: 0; 
-  font-size: 1.2rem; 
+.app-title {
+  margin: 0;
+  font-size: 1.2rem;
   color: var(--text-color);
 }
 
-.view-section { display: none; padding: 15px; }
-.view-section.active { display: block; }
+.main-content {
+  padding: 15px;
+}
+
+.view-section { 
+  display: none; 
+}
+
+.view-section.active { 
+  display: block; 
+}
 
 /* 📅 カレンダー関連 */
-.calendar-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
+.calendar-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 15px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-.calendar-grid {
+.month-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.minimize-btn {
+  background: #eee;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+#calendar-body.hidden {
+  display: none;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+
+.calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
-  margin-top: 10px;
 }
 
-.day-cell {
-  background: var(--card-bg);
+.calendar-days div {
+  background: #f9f9f9;
   min-height: 48px;
   padding: 4px;
   border-radius: 6px;
@@ -57,69 +103,200 @@ body {
   cursor: pointer;
   border: 1px solid var(--border-color);
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  text-align: center;
 }
 
-.day-cell.today { 
-  border: 2px solid var(--primary-color); 
+.calendar-days div.active {
+  border: 2px solid var(--primary-color);
+  background-color: #e8f5e9;
   font-weight: bold;
 }
 
-.day-cell .stamp {
+.calendar-days .stamp {
   font-size: 0.9rem;
   display: block;
   margin-top: 2px;
 }
 
-/* 前回のヒント表示 */
+/* 区切り & コピー */
+.section-divider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-divider h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.copy-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* 🏋️ ワークアウト表示 */
+.category-card {
+  background: var(--card-bg);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 15px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 6px;
+}
+
+.category-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.exercise-block {
+  background: #fdfdfd;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.exercise-title {
+  font-weight: bold;
+}
+
 .prev-hint {
   font-size: 0.78rem;
   color: var(--text-sub);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   background-color: #f0f4f8;
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-block;
 }
 
-/* 記録コピーボタン */
-.details-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  margin-top: 15px;
-  margin-bottom: 10px;
+.workout-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
 }
 
-.btn-copy {
+.workout-table th, .workout-table td {
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.workout-table th {
+  color: var(--text-sub);
+  font-weight: normal;
+}
+
+.step-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.step-btn {
+  background: #eee;
+  border: 1px solid #ccc;
+  width: 24px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.step-control input {
+  width: 45px;
+  text-align: center;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.del-btn {
+  background: #ffeded;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.action-btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.sub-btn {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.add-exercise-wrapper, .add-category-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.form-select {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.action-btn-primary {
   background: var(--primary-color);
   color: white;
   border: none;
-  padding: 7px 14px;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
   cursor: pointer;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* 📊 チャート・⚙️ 設定画面 */
-.chart-controls, .add-custom-form {
+.section-title {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.chart-controls {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-select, input[type="text"], input[type="number"] {
-  background: #ffffff;
-  color: var(--text-color);
-  border: 1px solid #ccc;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-select, input[type="text"] {
-  flex: 1;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .chart-container {
@@ -129,12 +306,11 @@ select, input[type="text"] {
   position: relative;
   height: 250px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .chart-summary {
-  margin-top: 15px;
-  padding: 12px;
+  margin-top: 12px;
+  padding: 10px;
   background: var(--card-bg);
   border-radius: 8px;
   font-size: 0.9rem;
@@ -148,11 +324,18 @@ select, input[type="text"] {
   border-radius: 8px;
   margin-bottom: 15px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.setting-desc { font-size: 0.8rem; color: var(--text-sub); }
-.setting-buttons { display: flex; gap: 10px; margin-top: 10px; }
+.setting-desc { 
+  font-size: 0.8rem; 
+  color: var(--text-sub); 
+}
+
+.setting-buttons { 
+  display: flex; 
+  gap: 10px; 
+  margin-top: 10px; 
+}
 
 .btn-primary, .btn-secondary {
   background: var(--primary-color);
@@ -162,8 +345,6 @@ select, input[type="text"] {
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
-  display: inline-block;
-  text-align: center;
   font-weight: bold;
 }
 
@@ -171,18 +352,23 @@ select, input[type="text"] {
   background: #666666; 
 }
 
-.custom-list { list-style: none; padding: 0; margin-top: 10px; }
-.custom-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border-color);
+.custom-list { 
+  list-style: none; 
+  padding: 0; 
+  margin-top: 10px; 
 }
 
-/* ボトムナビゲーション */
+.custom-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+}
+
+/* ボトムナビ */
 .bottom-nav {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   background: var(--card-bg);
   display: flex;
@@ -195,7 +381,7 @@ select, input[type="text"] {
   background: none;
   border: none;
   color: var(--text-sub);
-  padding: 12px 0;
+  padding: 14px 0;
   font-size: 0.85rem;
   cursor: pointer;
 }
